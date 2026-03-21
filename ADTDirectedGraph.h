@@ -21,6 +21,8 @@ class ADTDirectedGraph
     friend class ADTDirectedGraphIterator;
 
 private:
+    int maxCapacity;
+
     Outbound outbound;
     Inbound inbound;
     EdgeCosts costs;
@@ -28,8 +30,9 @@ private:
 public:
     /**
      * @brief Construct a new ADTDirectedGraph object.
+     * @param maxCapacity Max number of vertices possible in graph.
      */
-    ADTDirectedGraph();
+    ADTDirectedGraph(int maxCapacity);
 
     /**
      * @brief Handle deep copy of a new ADTDirectedGraph object.
@@ -115,6 +118,20 @@ public:
      */
     bool removeEdge(Edge edge);
 
-    bool addVertex();
-    bool removeVertex();
+    /**
+     * @brief Adds a vertex to the graph.
+     *
+     * @param vertex The vertex to be added.
+     * @return true If adding the vertex was successfull.
+     * @return false If adding the vertex was not successfull.
+     */
+    bool addVertex(Vertex vertex);
+    /**
+     * @brief Removes a vertex from the graph.
+     *
+     * @param vertex The vertex to be removed.
+     * @return true If removing the vertex was successfull.
+     * @return false If removing the vertex was not successfull.
+     */
+    bool removeVertex(Vertex vertex);
 };
