@@ -93,58 +93,6 @@ void testRemoveEdge()
     std::cout << "testRemoveEdge passed" << std::endl;
 }
 
-void testParseVertices()
-{
-    ADTDirectedGraph graph = ADTDirectedGraph{};
-
-    graph.addVertex(3);
-    graph.addVertex(3);
-    graph.addVertex(3);
-    graph.addVertex(1);
-    graph.addVertex(3);
-    graph.addVertex(0);
-
-    graph.parseVertices(false);
-    std::cout << "testParseVertices passed" << std::endl;
-}
-
-void testParseOutboundEdges()
-{
-    ADTDirectedGraph graph = ADTDirectedGraph{};
-
-    graph.addVertex(1);
-    graph.addVertex(2);
-    graph.addVertex(3);
-    graph.addVertex(4);
-
-    graph.addEdge({1, 2}, 3);
-    graph.addEdge({2, 4}, 2);
-    graph.addEdge({2, 2}, 4);
-    graph.addEdge({4, 1}, 5);
-    graph.addEdge({2, 1}, 5);
-
-    graph.parseOutboundEdges(2, false);
-    std::cout << "testParseOutboundEdges passed" << std::endl;
-}
-
-void testParseInboundEdges()
-{
-    ADTDirectedGraph graph = ADTDirectedGraph{};
-
-    graph.addVertex(1);
-    graph.addVertex(2);
-    graph.addVertex(3);
-    graph.addVertex(4);
-
-    graph.addEdge({1, 2}, 3);
-    graph.addEdge({2, 4}, 2);
-    graph.addEdge({2, 2}, 4);
-    graph.addEdge({4, 1}, 5);
-
-    graph.parseInboundEdges(2, false);
-    std::cout << "testParseInboundEdges passed" << std::endl;
-}
-
 void testIsEdge()
 {
 

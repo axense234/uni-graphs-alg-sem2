@@ -3,10 +3,11 @@
 #include <fstream>
 #include <random>
 #include <climits>
+#include <exception>
 
 Helpers::Helpers() {};
 
-bool Helpers::readGraph(ADTDirectedGraph &graph, std::string &filename)
+bool Helpers::readGraph(ADTDirectedGraph &graph, const std::string &filename)
 {
     std::ifstream inputFile(filename);
 
@@ -34,7 +35,7 @@ bool Helpers::readGraph(ADTDirectedGraph &graph, std::string &filename)
     return true;
 }
 
-bool Helpers::writeGraph(const ADTDirectedGraph &graph, std::string &filename)
+bool Helpers::writeGraph(const ADTDirectedGraph &graph, const std::string &filename)
 {
     std::ofstream outputFile(filename);
 
@@ -45,8 +46,8 @@ bool Helpers::writeGraph(const ADTDirectedGraph &graph, std::string &filename)
 
     outputFile << graph.nbVertices() << ' ' << graph.nbEdges() << std::endl;
 
-    EdgeCosts::const_iterator startIt = graph.edgesBeginIterator();
-    EdgeCosts::const_iterator endIt = graph.edgesEndIterator();
+    EdgeCosts::const_iterator startIt = graph.parseEdgesBegin();
+    EdgeCosts::const_iterator endIt = graph.parseEdgesEnd();
 
     while (startIt != endIt)
     {
@@ -64,6 +65,13 @@ bool Helpers::writeGraph(const ADTDirectedGraph &graph, std::string &filename)
 
 ADTDirectedGraph Helpers::generateRandomGraph(unsigned int nbVertices, unsigned int nbEdges)
 {
+
+    // so if we have nbEdges > nbVertices * (nbVertices - 1) we have a problemo
+    if (nbEdges > nbVertices * (nbVertices - 1))
+    {
+        throw std::exception();
+    }
+
     ADTDirectedGraph graph = ADTDirectedGraph{};
 
     // way of generating numbers from 0 to the limit of unsigned int

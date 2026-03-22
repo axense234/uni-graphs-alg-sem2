@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../domain/ADTDirectedGraph.h"
+#include <string>
 
 // forward declaration
 class MenuController;
@@ -10,7 +11,7 @@ class MenuUI
     friend class MenuController;
 
 private:
-    ADTDirectedGraph graph;
+    ADTDirectedGraph &graph;
 
     unsigned short userMenuOption;
 
@@ -20,7 +21,7 @@ public:
      *
      * @param g Graph dependency.
      */
-    MenuUI();
+    MenuUI(ADTDirectedGraph &g);
 
     /**
      * @brief Starts the menu application :).
@@ -40,7 +41,7 @@ public:
      * @param label Display label.
      * @return unsigned int
      */
-    unsigned int getUserUnsignedInt(char *label) const;
+    unsigned int getUserUnsignedInt(const std::string &label) const;
 
     /**
      * @brief Gets a Vertex from the console.
@@ -63,5 +64,17 @@ public:
      */
     EdgeCost getUserEdgeCost() const;
 
+    /**
+     * @brief Gets a filename from the console.
+     *
+     * @return string
+     */
+    std::string getUserFilename() const;
+
+    /**
+     * @brief Returns a newly created controller instance.
+     *
+     * @return MenuController
+     */
     MenuController controller() const;
 };

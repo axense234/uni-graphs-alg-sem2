@@ -7,7 +7,7 @@ class ADTDirectedGraphIterator
 
 private:
     const ADTDirectedGraph &graph;
-    Vertex currentVertex;
+    OutboundIterator currentVerticesIterator;
 
     ADTDirectedGraphIterator(const ADTDirectedGraph &graph);
 

@@ -10,8 +10,6 @@ private:
 public:
     /**
      * @brief Construct a new Helpers object
-     *
-     * @param graph The graph you want to apply your helpers to.
      */
     Helpers();
     /**
@@ -22,7 +20,7 @@ public:
      * @return true If read was successfull.
      * @return false If read was not successful >:(.
      */
-    static bool readGraph(ADTDirectedGraph &graph, std::string &filename);
+    static bool readGraph(ADTDirectedGraph &graph, const std::string &filename);
 
     /**
      * @brief Writes to a text file with a specified filename the graph.
@@ -33,7 +31,7 @@ public:
      * @return true If write was successful.
      * @return false If write was indeed not successful.
      */
-    static bool writeGraph(const ADTDirectedGraph &graph, std::string &filename);
+    static bool writeGraph(const ADTDirectedGraph &graph, const std::string &filename);
 
     /**
      * @brief Generates a random graph with nbVertices number of vertices and nbEdges number of edges. \n

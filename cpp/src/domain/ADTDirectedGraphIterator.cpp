@@ -10,7 +10,7 @@ ADTDirectedGraphIterator::ADTDirectedGraphIterator(const ADTDirectedGraph &g) : 
     {
         throw std::exception();
     }
-    this->currentVertex = this->graph.outbound.begin()->first;
+    this->currentVerticesIterator = this->graph.outbound.begin();
 }
 
 void ADTDirectedGraphIterator::first()
@@ -19,7 +19,7 @@ void ADTDirectedGraphIterator::first()
     {
         throw std::exception();
     }
-    this->currentVertex = this->graph.outbound.begin()->first;
+    this->currentVerticesIterator = this->graph.outbound.begin();
 }
 
 void ADTDirectedGraphIterator::next()
@@ -29,7 +29,7 @@ void ADTDirectedGraphIterator::next()
         throw std::exception();
     }
 
-    this->currentVertex = std::next(this->graph.outbound.find(this->currentVertex))->first;
+    this->currentVerticesIterator = std::next(this->currentVerticesIterator);
     return;
 }
 
@@ -40,10 +40,10 @@ Vertex ADTDirectedGraphIterator::getCurrent()
         throw std::exception();
     }
 
-    return this->currentVertex;
+    return this->currentVerticesIterator->first;
 }
 
 bool ADTDirectedGraphIterator::valid() const
 {
-    return this->currentVertex < this->graph.nbVertices();
+    return this->currentVerticesIterator != this->graph.outbound.end();
 }

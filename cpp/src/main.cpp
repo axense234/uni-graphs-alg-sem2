@@ -2,6 +2,8 @@
 using namespace std;
 
 #include "../tests/Tests.h"
+#include "domain/ADTDirectedGraph.h"
+#include "ui/MenuUI.h"
 
 int main()
 {
@@ -10,10 +12,11 @@ int main()
     // testRemoveVertex();
     // testAddEdge();
     // testRemoveEdge();
-    // testParseVertices();
-    // testParseInboundEdges();
-    // testParseOutboundEdges();
     // testIsEdge();
+
+    ADTDirectedGraph graph;
+    MenuUI ui = MenuUI{graph};
+    ui.start();
 
     return 0;
 }
