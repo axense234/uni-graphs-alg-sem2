@@ -64,6 +64,7 @@ public:
     /**
      * @brief Get the in-degree of a vertex.
      *
+     * @attention Vertex must exist in the graph.
      * @param vertex The vertex in question.
      * @return unsigned int
      */
@@ -72,6 +73,7 @@ public:
     /**
      * @brief Get the out-degree of a vertex.
      *
+     * @attention Vertex must exist in the graph.
      * @param vertex The vertex in question.
      * @return unsigned int
      */
