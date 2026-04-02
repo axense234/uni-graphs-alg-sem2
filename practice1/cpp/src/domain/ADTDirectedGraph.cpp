@@ -180,9 +180,6 @@ bool ADTDirectedGraph::removeVertex(Vertex vertex)
         }
     }
 
-    // now we delete the key from the outbound itself
-    this->outbound.erase(vertex);
-
     // handle inbound
     Vertices &inboundNeigh = this->inbound.at(vertex);
 
@@ -193,7 +190,7 @@ bool ADTDirectedGraph::removeVertex(Vertex vertex)
 
         for (unsigned int i = 0; i < currOutboundNeigh.size(); i++)
         {
-            if (currOutboundNeigh.at(i) == currInVertex)
+            if (currOutboundNeigh.at(i) == vertex)
             {
                 currOutboundNeigh.erase(currOutboundNeigh.begin() + i);
                 break;
@@ -203,6 +200,9 @@ bool ADTDirectedGraph::removeVertex(Vertex vertex)
 
     // now we delete the key from the inbound itself
     this->inbound.erase(vertex);
+
+    // now we delete the key from the outbound itself
+    this->outbound.erase(vertex);
 
     // handle costs
 

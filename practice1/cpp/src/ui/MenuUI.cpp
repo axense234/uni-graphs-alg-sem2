@@ -31,6 +31,7 @@ void MenuUI::displayMenuOptions() const
     std::cout << "15: Read from a given file graph data. This updates the current Graph.\n";
     std::cout << "16: Write to a given filename graph data.\n";
     std::cout << "17: Exit program.\n";
+    std::cout << "18: Display menu.\n";
     std::cout << std::endl;
 }
 
@@ -135,11 +136,11 @@ std::string MenuUI::getUserFilename() const
 void MenuUI::start()
 {
 
+    this->displayMenuOptions();
     MenuController menuController = this->controller();
 
     while (true)
     {
-        this->displayMenuOptions();
         this->userMenuOption = getUserUnsignedInt("Menu Option: ");
         switch (userMenuOption)
         {
@@ -194,6 +195,9 @@ void MenuUI::start()
         case 17:
             std::cout << "Exiting..." << std::endl;
             return;
+        case 18:
+            this->displayMenuOptions();
+            break;
         default:
             break;
         }

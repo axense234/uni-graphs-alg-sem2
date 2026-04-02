@@ -11,6 +11,9 @@ bool Helpers::readGraph(ADTDirectedGraph &graph, const std::string &filename)
 {
     std::ifstream inputFile(filename);
 
+    // forgot to reset the damn graph
+    graph = ADTDirectedGraph{};
+
     if (!inputFile.is_open())
     {
         return false;
