@@ -50,8 +50,8 @@ void MenuController::displayGraphEdges() const
 
     std::cout << "Edges: \n";
 
-    EdgesIterator startIt = this->graph.parseEdgesBegin();
-    EdgesIterator endIt = this->graph.parseEdgesEnd();
+    std::map<Edge, EdgeCost>::const_iterator startIt = this->graph.parseEdgesBegin();
+    std::map<Edge, EdgeCost>::const_iterator endIt = this->graph.parseEdgesEnd();
 
     while (startIt != endIt)
     {
@@ -72,8 +72,8 @@ void MenuController::displayOutboundEdgesOfGivenVertex() const
 
     try
     {
-        VerticesIterator startIt = this->graph.parseOutboundOfGivenVertexBegin(vertex);
-        VerticesIterator endIt = this->graph.parseOutboundOfGivenVertexEnd(vertex);
+        std::vector<Vertex>::const_iterator startIt = this->graph.parseOutboundOfGivenVertexBegin(vertex);
+        std::vector<Vertex>::const_iterator endIt = this->graph.parseOutboundOfGivenVertexEnd(vertex);
 
         while (startIt != endIt)
         {
@@ -100,8 +100,8 @@ void MenuController::displayInboundEdgesOfGivenVertex() const
     try
     {
 
-        VerticesIterator startIt = this->graph.parseInboundOfGivenVertexBegin(vertex);
-        VerticesIterator endIt = this->graph.parseInboundOfGivenVertexEnd(vertex);
+        std::vector<Vertex>::const_iterator startIt = this->graph.parseInboundOfGivenVertexBegin(vertex);
+        std::vector<Vertex>::const_iterator endIt = this->graph.parseInboundOfGivenVertexEnd(vertex);
 
         while (startIt != endIt)
         {

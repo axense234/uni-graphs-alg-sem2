@@ -7,7 +7,7 @@ class ADTDirectedGraphIterator
 
 private:
     const ADTDirectedGraph &graph;
-    OutboundIterator currentVerticesIterator;
+    std::map<Vertex, std::vector<Vertex>>::const_iterator currentVerticesIterator;
 
     ADTDirectedGraphIterator(const ADTDirectedGraph &graph);
 

@@ -9,18 +9,19 @@
 #include <fstream>
 #include <random>
 #include <climits>
+#include <vector>
 #include <exception>
 
 ADTDirectedGraph::ADTDirectedGraph()
 {
     // handle outbound
-    this->outbound = Outbound{};
+    this->outbound = std::map<Vertex, std::vector<Vertex>>{};
 
     // handle inbound
-    this->inbound = Inbound{};
+    this->inbound = std::map<Vertex, std::vector<Vertex>>{};
 
     // handle costs
-    this->costs = EdgeCosts{};
+    this->costs = std::map<Edge, EdgeCost>{};
 }
 
 unsigned int ADTDirectedGraph::nbVertices() const
@@ -48,7 +49,7 @@ bool ADTDirectedGraph::isEdge(Vertex first, Vertex second) const
         return false;
     }
 
-    Vertices outboundNeigh = this->outbound.at(first);
+    std::vector<Vertex> outboundNeigh = this->outbound.at(first);
 
     bool found = false;
 
@@ -112,7 +113,7 @@ bool ADTDirectedGraph::removeEdge(Edge edge)
 
     // handle outbound
     unsigned int outIndex = -1;
-    Vertices &outboundNeigh = this->outbound.at(edge.first);
+    std::vector<Vertex> &outboundNeigh = this->outbound.at(edge.first);
     for (unsigned int i = 0; i < outboundNeigh.size(); i++)
     {
         if (outboundNeigh.at(i) == edge.second)
@@ -127,7 +128,7 @@ bool ADTDirectedGraph::removeEdge(Edge edge)
     // handle inbound
     // basically the same thing as above but we change the source and dest
     unsigned int inIndex = -1;
-    Vertices &inboundNeigh = this->inbound.at(edge.second);
+    std::vector<Vertex> &inboundNeigh = this->inbound.at(edge.second);
     for (unsigned int i = 0; i < inboundNeigh.size(); i++)
     {
         if (inboundNeigh.at(i) == edge.first)
@@ -154,10 +155,10 @@ bool ADTDirectedGraph::addVertex(Vertex vertex)
     }
 
     // handle outbound
-    this->outbound[vertex] = Vertices{};
+    this->outbound[vertex] = std::vector<Vertex>{};
 
     // handle inbound
-    this->inbound[vertex] = Vertices{};
+    this->inbound[vertex] = std::vector<Vertex>{};
 
     return true;
 }
@@ -172,12 +173,12 @@ bool ADTDirectedGraph::removeVertex(Vertex vertex)
     }
 
     // handle inbound first
-    Vertices &outboundNeigh = this->outbound.at(vertex);
+    std::vector<Vertex> &outboundNeigh = this->outbound.at(vertex);
 
     // we check in the inbound of the current vertex if we have any matches then delete said match
     for (const Vertex &currOutVertex : outboundNeigh)
     {
-        Vertices &currInboundNeigh = this->inbound.at(currOutVertex);
+        std::vector<Vertex> &currInboundNeigh = this->inbound.at(currOutVertex);
 
         for (unsigned int i = 0; i < currInboundNeigh.size(); i++)
         {
@@ -190,12 +191,12 @@ bool ADTDirectedGraph::removeVertex(Vertex vertex)
     }
 
     // handle inbound
-    Vertices &inboundNeigh = this->inbound.at(vertex);
+    std::vector<Vertex> &inboundNeigh = this->inbound.at(vertex);
 
     // we check in the outbound of the current vertex if we have any matches then delete said match
     for (const Vertex &currInVertex : inboundNeigh)
     {
-        Vertices &currOutboundNeigh = this->outbound.at(currInVertex);
+        std::vector<Vertex> &currOutboundNeigh = this->outbound.at(currInVertex);
 
         for (unsigned int i = 0; i < currOutboundNeigh.size(); i++)
         {
@@ -238,7 +239,7 @@ ADTDirectedGraphIterator ADTDirectedGraph::parseVertices() const
     return ADTDirectedGraphIterator(*this);
 }
 
-VerticesIterator ADTDirectedGraph::parseOutboundOfGivenVertexBegin(Vertex vertex) const
+std::vector<Vertex>::const_iterator ADTDirectedGraph::parseOutboundOfGivenVertexBegin(Vertex vertex) const
 {
 
     if (this->outbound.count(vertex) == 0)
@@ -249,7 +250,7 @@ VerticesIterator ADTDirectedGraph::parseOutboundOfGivenVertexBegin(Vertex vertex
     return this->outbound.at(vertex).begin();
 }
 
-VerticesIterator ADTDirectedGraph::parseOutboundOfGivenVertexEnd(Vertex vertex) const
+std::vector<Vertex>::const_iterator ADTDirectedGraph::parseOutboundOfGivenVertexEnd(Vertex vertex) const
 {
 
     if (this->outbound.count(vertex) == 0)
@@ -260,7 +261,7 @@ VerticesIterator ADTDirectedGraph::parseOutboundOfGivenVertexEnd(Vertex vertex) 
     return this->outbound.at(vertex).end();
 }
 
-VerticesIterator ADTDirectedGraph::parseInboundOfGivenVertexEnd(Vertex vertex) const
+std::vector<Vertex>::const_iterator ADTDirectedGraph::parseInboundOfGivenVertexEnd(Vertex vertex) const
 {
 
     if (this->inbound.count(vertex) == 0)
@@ -271,7 +272,7 @@ VerticesIterator ADTDirectedGraph::parseInboundOfGivenVertexEnd(Vertex vertex) c
     return this->inbound.at(vertex).end();
 }
 
-VerticesIterator ADTDirectedGraph::parseInboundOfGivenVertexBegin(Vertex vertex) const
+std::vector<Vertex>::const_iterator ADTDirectedGraph::parseInboundOfGivenVertexBegin(Vertex vertex) const
 {
 
     if (this->inbound.count(vertex) == 0)
@@ -282,12 +283,12 @@ VerticesIterator ADTDirectedGraph::parseInboundOfGivenVertexBegin(Vertex vertex)
     return this->inbound.at(vertex).begin();
 }
 
-EdgesIterator ADTDirectedGraph::parseEdgesBegin() const
+std::map<Edge, EdgeCost>::const_iterator ADTDirectedGraph::parseEdgesBegin() const
 {
     return this->costs.begin();
 }
 
-EdgesIterator ADTDirectedGraph::parseEdgesEnd() const
+std::map<Edge, EdgeCost>::const_iterator ADTDirectedGraph::parseEdgesEnd() const
 {
     return this->costs.end();
 }
@@ -310,8 +311,8 @@ std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> ADTDirectedGraph::forwardB
         Vertex x = queue.front();
         queue.pop();
 
-        VerticesIterator neighOutBegin = graph.parseOutboundOfGivenVertexBegin(x);
-        VerticesIterator neighOutEnd = graph.parseOutboundOfGivenVertexEnd(x);
+        std::vector<Vertex>::const_iterator neighOutBegin = graph.parseOutboundOfGivenVertexBegin(x);
+        std::vector<Vertex>::const_iterator neighOutEnd = graph.parseOutboundOfGivenVertexEnd(x);
 
         while (neighOutBegin != neighOutEnd)
         {
@@ -400,8 +401,8 @@ bool ADTDirectedGraph::writeGraph(const ADTDirectedGraph &graph, const std::stri
 
     outputFile << graph.nbVertices() << ' ' << graph.nbEdges() << std::endl;
 
-    EdgeCosts::const_iterator startIt = graph.parseEdgesBegin();
-    EdgeCosts::const_iterator endIt = graph.parseEdgesEnd();
+    std::map<Edge, EdgeCost>::const_iterator startIt = graph.parseEdgesBegin();
+    std::map<Edge, EdgeCost>::const_iterator endIt = graph.parseEdgesEnd();
 
     while (startIt != endIt)
     {
@@ -435,7 +436,7 @@ ADTDirectedGraph ADTDirectedGraph::generateRandomGraph(unsigned int nbVertices, 
     std::uniform_int_distribution<unsigned int> randomUnsignedInt(0, UINT_MAX);
     std::uniform_int_distribution<unsigned int> randomVerticesIndex(0, nbVertices - 1);
 
-    Vertices generatedVertices = Vertices{};
+    std::vector<Vertex> generatedVertices = std::vector<Vertex>{};
 
     // we generate nbVertices number of vertices
     for (unsigned int i = 0; i < nbVertices; ++i)

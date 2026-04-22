@@ -7,18 +7,7 @@
 
 typedef unsigned int Vertex;
 typedef unsigned int EdgeCost;
-
 typedef std::pair<Vertex, Vertex> Edge;
-
-typedef std::vector<Vertex> Vertices;
-
-typedef std::map<Vertex, Vertices> Outbound;
-typedef std::map<Vertex, Vertices> Inbound;
-typedef std::map<Edge, EdgeCost> EdgeCosts;
-
-typedef Outbound::const_iterator OutboundIterator;
-typedef EdgeCosts::const_iterator EdgesIterator;
-typedef Vertices::const_iterator VerticesIterator;
 
 class ADTDirectedGraphIterator;
 
@@ -28,9 +17,9 @@ class ADTDirectedGraph
     friend class ADTDirectedGraphIterator;
 
 private:
-    Outbound outbound;
-    Inbound inbound;
-    EdgeCosts costs;
+    std::map<Vertex, std::vector<Vertex>> outbound;
+    std::map<Vertex, std::vector<Vertex>> inbound;
+    std::map<Edge, EdgeCost> costs;
 
 public:
     /**
@@ -130,7 +119,7 @@ public:
      * @param vertex The vertex in question.
      * @return Outbound::const_iterator
      */
-    VerticesIterator parseOutboundOfGivenVertexBegin(Vertex vertex) const;
+    std::vector<Vertex>::const_iterator parseOutboundOfGivenVertexBegin(Vertex vertex) const;
 
     /**
      * @brief Returns the iterator for the outbound neighbors of a given vertex from the end.
@@ -139,7 +128,7 @@ public:
      * @param vertex The vertex in question.
      * @return Outbound::const_iterator
      */
-    VerticesIterator parseOutboundOfGivenVertexEnd(Vertex vertex) const;
+    std::vector<Vertex>::const_iterator parseOutboundOfGivenVertexEnd(Vertex vertex) const;
 
     /**
      * @brief Returns the iterator for the inbound neighbors of a given vertex from the end.
@@ -148,7 +137,7 @@ public:
      * @param vertex The vertex in question.
      * @return Inbound::const_iterator
      */
-    VerticesIterator parseInboundOfGivenVertexEnd(Vertex vertex) const;
+    std::vector<Vertex>::const_iterator parseInboundOfGivenVertexEnd(Vertex vertex) const;
 
     /**
      * @brief Returns the iterator for the inbound neighbors of a given vertex from the beginning.
@@ -157,20 +146,20 @@ public:
      * @param vertex The vertex in question.
      * @return Inbound::const_iterator
      */
-    VerticesIterator parseInboundOfGivenVertexBegin(Vertex vertex) const;
+    std::vector<Vertex>::const_iterator parseInboundOfGivenVertexBegin(Vertex vertex) const;
 
     /**
      * @brief Returns the iterator for the edges (with costs) from the beginning of the iteratable.
      *
      * @return EdgeCosts::const_iterator
      */
-    EdgesIterator parseEdgesBegin() const;
+    std::map<Edge, EdgeCost>::const_iterator parseEdgesBegin() const;
     /**
      * @brief Returns the iterator for the edges (with costs) from the end of the iteratable.
      *
      * @return EdgeCosts::const_iterator
      */
-    EdgesIterator parseEdgesEnd() const;
+    std::map<Edge, EdgeCost>::const_iterator parseEdgesEnd() const;
 
     /**
      * @brief The algorith below visits all the vertices that are accessible from the start vertex. They are visited in the order of increasing distances from the starting vertex. A previous vector or map is computed, allowing us to compute the minimum length path from the starting vertex to any choosen accessible vertex.
