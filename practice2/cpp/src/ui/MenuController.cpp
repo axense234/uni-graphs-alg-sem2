@@ -298,3 +298,66 @@ void MenuController::findLowestLengthPathBetweenTwoGivenVertices() const
                   << std::endl;
     }
 }
+
+ADTUndirectedGraph MenuController::convertToUndirected(const ADTDirectedGraph &directedGraph)
+{
+    ADTUndirectedGraph undirectedGraph;
+
+    // handle vertices
+    for (auto vertexIt = directedGraph.parseVertices(); vertexIt.valid(); vertexIt.next())
+    {
+        undirectedGraph.addVertex(vertexIt.getCurrent());
+    }
+
+    // handle edges
+    for (auto edgeIt = directedGraph.parseEdgesBegin(); edgeIt != directedGraph.parseEdgesEnd(); ++edgeIt)
+    {
+        Edge directedEdge = edgeIt->first;
+        EdgeCost cost = edgeIt->second;
+
+        // undirected edge
+        Edge undirectedEdge = {directedEdge.first, directedEdge.second};
+
+        // duplicate handling
+        if (!undirectedGraph.isEdge(undirectedEdge.first, undirectedEdge.second))
+        {
+            undirectedGraph.addEdge(undirectedEdge, cost);
+        }
+    }
+
+    return undirectedGraph;
+}
+
+void MenuController::findConnectedComponentsOfGivenUndirectedGraph()
+{
+    try
+    {
+        /* code */
+
+        ADTUndirectedGraph transformedGraph = this->convertToUndirected(this->graph);
+
+        std::vector<std::set<Vertex>> foundComponents = ADTUndirectedGraph::findConnectedComponentsOfUndirectedGraph(transformedGraph);
+
+        std::cout << "connected components";
+        std::cout << "hit: " << foundComponents.size() << "\n\n";
+
+        for (size_t i = 0; i < foundComponents.size(); ++i)
+        {
+            std::cout << "component " << (i + 1) << ": { ";
+
+            bool first = true;
+            for (Vertex v : foundComponents[i])
+            {
+                if (!first)
+                    std::cout << ", ";
+                std::cout << v;
+                first = false;
+            }
+            std::cout << " }\n";
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << "something went wrong" << std::endl;
+    }
+}

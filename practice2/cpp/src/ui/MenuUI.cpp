@@ -66,8 +66,11 @@ std::vector<std::pair<std::string, Command>> MenuUI::constructAvailableCommands(
 
         {"llp", {UTILITY, "find lowest length path between 2 vertices.\n", [controller]()
                  { controller.findLowestLengthPathBetweenTwoGivenVertices(); }}},
+
+        {"ccug", {UTILITY, "finds the connected components of an undirected graph (transformed from directed to undirected)\n", [controller]() mutable
+                  { controller.findConnectedComponentsOfGivenUndirectedGraph(); }}},
     };
-}
+};
 
 MenuUI::MenuUI(ADTDirectedGraph &g) : graph(g)
 {

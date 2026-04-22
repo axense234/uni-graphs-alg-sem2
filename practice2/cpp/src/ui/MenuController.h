@@ -1,6 +1,8 @@
 #pragma once
 
 #include "MenuUI.h"
+#include "../domain/ADTUndirectedGraph.h"
+#include "../domain/ADTDirectedGraph.h"
 
 class MenuController
 {
@@ -41,4 +43,12 @@ public:
     void writeGraphDataToGivenFile();
 
     void findLowestLengthPathBetweenTwoGivenVertices() const;
+    void findConnectedComponentsOfGivenUndirectedGraph();
+
+    /**
+     * @brief Converts a ADTDirectedGraph instance into a ADTUndirectedGraph instance and returns it.
+     *
+     * this should probably go somewhere else but ehh
+     */
+    ADTUndirectedGraph convertToUndirected(const ADTDirectedGraph &directedGraph);
 };

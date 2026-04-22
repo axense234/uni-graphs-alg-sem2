@@ -26,14 +26,7 @@ ADTDirectedGraph::ADTDirectedGraph()
 
 unsigned int ADTDirectedGraph::nbVertices() const
 {
-    unsigned int nbVertices = 0;
-
-    for (const auto &_ : this->outbound)
-    {
-        nbVertices++;
-    }
-
-    return nbVertices;
+    return this->outbound.size();
 }
 
 unsigned int ADTDirectedGraph::nbEdges() const
