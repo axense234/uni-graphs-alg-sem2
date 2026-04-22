@@ -1,8 +1,8 @@
 #include "MenuController.h"
-#include "../helpers/Helpers.h"
 #include "../domain/ADTDirectedGraphIterator.h"
 
 #include <iostream>
+#include <set>
 
 MenuController::MenuController(const MenuUI &u, ADTDirectedGraph &g) : ui(u), graph(g) {}
 
@@ -230,7 +230,7 @@ void MenuController::generateRandomGraphOfGivenNbVerticesAndNbEdges()
     std::cout << "Generating a Random Graph....bz....z......" << std::endl;
     try
     {
-        this->ui.graph = Helpers::generateRandomGraph(nbVertices, nbEdges);
+        this->ui.graph = ADTDirectedGraph::generateRandomGraph(nbVertices, nbEdges);
     }
     catch (const std::exception &e)
     {
@@ -242,7 +242,7 @@ void MenuController::readGraphDataFromGivenFile()
 {
     std::string filename = this->ui.getUserFilename();
 
-    bool res = Helpers::readGraph(this->graph, filename);
+    bool res = ADTDirectedGraph::readGraph(this->graph, filename);
 
     if (res)
     {
@@ -258,7 +258,7 @@ void MenuController::writeGraphDataToGivenFile()
 {
     std::string filename = this->ui.getUserFilename();
 
-    bool res = Helpers::writeGraph(this->graph, filename);
+    bool res = ADTDirectedGraph::writeGraph(this->graph, filename);
 
     if (res)
     {
@@ -267,5 +267,34 @@ void MenuController::writeGraphDataToGivenFile()
     else
     {
         std::cout << "Writing to " << filename << " FAILED." << std::endl;
+    }
+}
+
+void MenuController::findLowestLengthPathBetweenTwoGivenVertices() const
+{
+    Vertex start = this->ui.getUserVertex();
+    Vertex end = this->ui.getUserVertex();
+
+    std::vector<Vertex> path = this->graph.findLowestLengthPathBetweenTwoVertices(this->graph, start, end);
+
+    if (path.empty())
+    {
+        std::cout << "no path exists" << std::endl;
+        ;
+    }
+    else
+    {
+        std::cout << "shortest path from " << start << " to " << end << " (length: " << path.size() - 1 << "):\n";
+
+        for (size_t i = 0; i < path.size(); ++i)
+        {
+            std::cout << path[i];
+            if (i < path.size() - 1)
+            {
+                std::cout << " -> ";
+            }
+        }
+        std::cout << std::endl
+                  << std::endl;
     }
 }

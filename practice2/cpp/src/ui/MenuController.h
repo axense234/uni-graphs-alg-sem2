@@ -39,4 +39,6 @@ public:
     void generateRandomGraphOfGivenNbVerticesAndNbEdges();
     void readGraphDataFromGivenFile();
     void writeGraphDataToGivenFile();
+
+    void findLowestLengthPathBetweenTwoGivenVertices() const;
 };

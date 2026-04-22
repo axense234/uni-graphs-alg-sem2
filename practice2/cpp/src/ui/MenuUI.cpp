@@ -2,36 +2,96 @@
 #include "MenuController.h"
 
 #include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
+#include <algorithm>
+
+std::vector<std::pair<std::string, Command>> MenuUI::constructAvailableCommands(MenuController controller)
+{
+    return std::vector<std::pair<std::string, Command>>{
+        {"count vertices", {PROPERTY, "get the current number of vertices of the graph.\n", [controller]()
+                            { controller.displayCurrentNbVertices(); }}},
+
+        {"count edges", {PROPERTY, "get the current number of edges of the graph.\n", [controller]()
+                         { controller.displayCurrentNbEdges(); }}},
+
+        {"vertices", {PROPERTY, "display the vertices of the graph.\n", [controller]()
+                      { controller.displayGraphVertices(); }}},
+
+        {"edges", {PROPERTY, "display the edges of the graph (with cost included).\n", [controller]()
+                   { controller.displayGraphEdges(); }}},
+
+        {"outboundEdges", {PROPERTY, "display the outbound edges of a given vertex.\n", [controller]()
+                           { controller.displayOutboundEdgesOfGivenVertex(); }}},
+
+        {"inboundEdges", {PROPERTY, "display the inbound edges of a given vertex.\n", [controller]()
+                          { controller.displayInboundEdgesOfGivenVertex(); }}},
+
+        {"isEdge", {PROPERTY, "check if a given edge is an edge of the graph.\n", [controller]()
+                    { controller.checkIfGivenEdgeIsGraphEdge(); }}},
+
+        {"inDegree", {PROPERTY, "get the in-degree of a given vertex.\n", [controller]()
+                      { controller.displayInDegreeOfGivenVertex(); }}},
+
+        {"outDegree", {PROPERTY, "get the out-degree of a given vertex.\n", [controller]()
+                       { controller.displayOutDegreeOfGivenVertex(); }}},
+
+        {"add vertex", {MUTATION, "add a given vertex to the graph.\n", [controller]() mutable
+                        { controller.addGivenVertexToGraph(); }}},
+
+        {"remove vertex", {MUTATION, "remove a given vertex from the graph.\n", [controller]() mutable
+                           { controller.removeGivenVertexFromGraph(); }}},
+
+        {"add edge", {MUTATION, "add a given edge to the graph.\n", [controller]() mutable
+                      { controller.addGivenEdgeToGraph(); }}},
+
+        {"remove edge", {MUTATION, "remove a given edge from the graph.\n", [controller]() mutable
+                         { controller.removeGivenEdgeFromGraph(); }}},
+
+        {"generate random graph", {UTILITY, "generate a random graph with given nb of vertices and given nb of edges, this newly generated graph replaces the current graph.\n", [controller]() mutable
+                                   { controller.generateRandomGraphOfGivenNbVerticesAndNbEdges(); }}},
+
+        {"read graph", {UTILITY, "read from a given file graph data, this updates the current graph.\n", [controller]() mutable
+                        { controller.readGraphDataFromGivenFile(); }}},
+
+        {"write graph", {UTILITY, "write to a given filename graph data.\n", [controller]() mutable
+                         { controller.writeGraphDataToGivenFile(); }}},
+
+        {"exit", {UTILITY, "exit program.\n", []()
+                  { std::exit(0); }}},
+
+        {"help", {UTILITY, "display the available commands.\n", [this]()
+                  { this->help(); }}},
+
+        {"llp", {UTILITY, "find lowest length path between 2 vertices.\n", [controller]()
+                 { controller.findLowestLengthPathBetweenTwoGivenVertices(); }}},
+    };
+}
 
 MenuUI::MenuUI(ADTDirectedGraph &g) : graph(g)
 {
-    this->userMenuOption = 0;
+    this->userCommand = "";
 }
 
-void MenuUI::displayMenuOptions() const
+void MenuUI::help()
 {
-    std::cout << "\n---------MENU OPTIONS---------\n";
-    std::cout << "\n---------GRAPH PROPERTIES---------\n";
-    std::cout << "1: Get the current number of Vertices of the Graph.\n";
-    std::cout << "2: Get the current number of Edges of the Graph.\n";
-    std::cout << "3: Display the Vertices of the Graph.\n";
-    std::cout << "4: Display the Edges of the Graph (with cost included).\n";
-    std::cout << "5: Display the Outbound Edges of a given Vertex.\n";
-    std::cout << "6: Display the Inbound Edges of a given Vertex.\n";
-    std::cout << "7: Check if a given Edge is an Edge of the Graph.\n";
-    std::cout << "8: Get the in-degree of a given Vertex.\n";
-    std::cout << "9: Get the out-degree of a given Vertex.\n";
-    std::cout << "\n---------GRAPH MUTATION---------\n";
-    std::cout << "10: Add a given Vertex to the Graph.\n";
-    std::cout << "11: Remove a given Vertex from the Graph.\n";
-    std::cout << "12: Add a given Edge to the Graph.\n";
-    std::cout << "13: Remove a given Edge from the Graph.\n";
-    std::cout << "\n---------UTILITIES---------\n";
-    std::cout << "14: Generate a random Graph with given nb of vertices and given nb of edges. This newly generated Graph replaces the current Graph.\n";
-    std::cout << "15: Read from a given file graph data. This updates the current Graph.\n";
-    std::cout << "16: Write to a given filename graph data.\n";
-    std::cout << "17: Exit program.\n";
-    std::cout << "18: Display menu.\n";
+    MenuController menuController = this->controller();
+    std::vector<std::pair<std::string, Command>> availableCommands = this->constructAvailableCommands(menuController);
+
+    std::cout
+        << "\n -> graphs algorithms practice 2 <- \n";
+    COMMAND_CATEGORY currentCategory = NONE;
+
+    for (const auto &command : availableCommands)
+    {
+        if (currentCategory != command.second.category)
+        {
+            std::cout << "\n-------------------------------------------" << "-------------------------------------------\n";
+            currentCategory = command.second.category;
+        }
+        std::cout << command.first << ": " << command.second.description;
+    }
     std::cout << std::endl;
 }
 
@@ -92,8 +152,6 @@ Edge MenuUI::getUserEdge() const
         std::cin.clear();
         std::cout << "Invalid input, expected an Edge (ex: 2 5)." << std::endl;
     }
-
-    return edge;
 }
 
 EdgeCost MenuUI::getUserEdgeCost() const
@@ -133,73 +191,38 @@ std::string MenuUI::getUserFilename() const
     }
 }
 
+std::string MenuUI::getUserCommand() const
+{
+    std::string command;
+    std::getline(std::cin, command);
+    return command;
+}
+
 void MenuUI::start()
 {
 
-    this->displayMenuOptions();
+    this->help();
     MenuController menuController = this->controller();
+    std::vector<std::pair<std::string, Command>> builtCommands = this->constructAvailableCommands(menuController);
 
     while (true)
     {
-        this->userMenuOption = getUserUnsignedInt("Menu Option: ");
-        switch (userMenuOption)
+        this->userCommand = this->getUserCommand();
+        if (!this->userCommand.empty())
         {
-        case 1:
-            menuController.displayCurrentNbVertices();
-            break;
-        case 2:
-            menuController.displayCurrentNbEdges();
-            break;
-        case 3:
-            menuController.displayGraphVertices();
-            break;
-        case 4:
-            menuController.displayGraphEdges();
-            break;
-        case 5:
-            menuController.displayOutboundEdgesOfGivenVertex();
-            break;
-        case 6:
-            menuController.displayInboundEdgesOfGivenVertex();
-            break;
-        case 7:
-            menuController.checkIfGivenEdgeIsGraphEdge();
-            break;
-        case 8:
-            menuController.displayInDegreeOfGivenVertex();
-            break;
-        case 9:
-            menuController.displayOutDegreeOfGivenVertex();
-            break;
-        case 10:
-            menuController.addGivenVertexToGraph();
-            break;
-        case 11:
-            menuController.removeGivenVertexFromGraph();
-            break;
-        case 12:
-            menuController.addGivenEdgeToGraph();
-            break;
-        case 13:
-            menuController.removeGivenEdgeFromGraph();
-            break;
-        case 14:
-            menuController.generateRandomGraphOfGivenNbVerticesAndNbEdges();
-            break;
-        case 15:
-            menuController.readGraphDataFromGivenFile();
-            break;
-        case 16:
-            menuController.writeGraphDataToGivenFile();
-            break;
-        case 17:
-            std::cout << "Exiting..." << std::endl;
-            return;
-        case 18:
-            this->displayMenuOptions();
-            break;
-        default:
-            break;
+            auto foundIt = std::find_if(builtCommands.begin(), builtCommands.end(), [this](const std::pair<std::string, Command> &pair)
+                                        { return pair.first == this->userCommand; });
+
+            if (foundIt == builtCommands.end())
+            {
+                std::cout << "invalid command, type 'help' for available commands" << std::endl;
+                continue;
+            }
+            else
+            {
+                std::pair<std::string, Command> command = *foundIt;
+                command.second.funcUsed();
+            }
         }
     }
 }
