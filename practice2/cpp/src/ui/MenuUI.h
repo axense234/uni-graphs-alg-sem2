@@ -2,9 +2,27 @@
 
 #include "../domain/ADTDirectedGraph.h"
 #include <string>
+#include <map>
+#include <functional>
+#include <vector>
+#include <utility>
 
-// forward declaration
 class MenuController;
+
+enum COMMAND_CATEGORY
+{
+    PROPERTY,
+    MUTATION,
+    UTILITY,
+    NONE
+};
+
+struct Command
+{
+    COMMAND_CATEGORY category;
+    std::string description;
+    std::function<void()> funcUsed;
+};
 
 class MenuUI
 {
@@ -13,7 +31,7 @@ class MenuUI
 private:
     ADTDirectedGraph &graph;
 
-    unsigned short userMenuOption;
+    std::string userCommand;
 
 public:
     /**
@@ -30,10 +48,20 @@ public:
     void start();
 
     /**
-     * @brief Displays the available menu options.
+     * @brief Displays the available commands.
      *
      */
-    void displayMenuOptions() const;
+    void help();
+
+    std::vector<std::pair<std::string, Command>> constructAvailableCommands(MenuController controller);
+
+    /**
+     * @brief Gets the user command from the console.
+     *
+     * @return std::string command.
+     *
+     */
+    std::string getUserCommand() const;
 
     /**
      * @brief Gets an unsigned int from the console.

@@ -1,6 +1,15 @@
 #include "ADTDirectedGraph.h"
 #include "ADTDirectedGraphIterator.h"
+
 #include <iostream>
+#include <set>
+#include <utility>
+#include <queue>
+#include <algorithm>
+#include <fstream>
+#include <random>
+#include <climits>
+#include <exception>
 
 ADTDirectedGraph::ADTDirectedGraph()
 {
@@ -57,12 +66,12 @@ bool ADTDirectedGraph::isEdge(Vertex first, Vertex second) const
 
 unsigned int ADTDirectedGraph::getInDegree(Vertex vertex) const
 {
-    return this->outbound.at(vertex).size();
+    return this->inbound.at(vertex).size();
 }
 
 unsigned int ADTDirectedGraph::getOutDegree(Vertex vertex) const
 {
-    return this->inbound.at(vertex).size();
+    return this->outbound.at(vertex).size();
 }
 
 bool ADTDirectedGraph::addEdge(Edge edge, EdgeCost cost)
@@ -207,11 +216,16 @@ bool ADTDirectedGraph::removeVertex(Vertex vertex)
     // handle costs
 
     // we iterate over the costs then if the key (type Edge) includes match we delete the entry
-    for (const auto &[edge, cost] : this->costs)
+    // compared to practice 1 this time we actually handle deleting properly when using iterators
+    for (auto it = this->costs.begin(); it != this->costs.end();)
     {
-        if (edge.first == vertex || edge.second == vertex)
+        if (it->first.first == vertex || it->first.second == vertex)
         {
-            this->costs.erase(edge);
+            it = this->costs.erase(it);
+        }
+        else
+        {
+            ++it;
         }
     }
 
@@ -276,4 +290,182 @@ EdgesIterator ADTDirectedGraph::parseEdgesBegin() const
 EdgesIterator ADTDirectedGraph::parseEdgesEnd() const
 {
     return this->costs.end();
+}
+
+std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> ADTDirectedGraph::forwardBreadthFirstTraversal(ADTDirectedGraph graph, Vertex start)
+{
+    std::queue<Vertex> queue;
+    std::map<Vertex, Vertex> prev;
+    std::map<Vertex, Vertex> dist;
+    std::set<Vertex> visited;
+
+    queue.push(start);
+    visited.insert(start);
+    dist[start] = 0;
+    prev[start] = start;
+
+    while (!queue.empty())
+    {
+        // those 2 lines are equivalent to the q.enqueue operation
+        Vertex x = queue.front();
+        queue.pop();
+
+        VerticesIterator neighOutBegin = graph.parseOutboundOfGivenVertexBegin(x);
+        VerticesIterator neighOutEnd = graph.parseOutboundOfGivenVertexEnd(x);
+
+        while (neighOutBegin != neighOutEnd)
+        {
+            Vertex y = *neighOutBegin;
+
+            if (visited.find(y) == visited.end())
+            {
+                queue.push(y);
+                visited.insert(y);
+                dist[y] = dist[x] + 1;
+                prev[y] = x;
+            }
+
+            ++neighOutBegin;
+        }
+    }
+
+    return {visited, prev};
+}
+
+std::vector<Vertex> ADTDirectedGraph::findLowestLengthPathBetweenTwoVertices(ADTDirectedGraph graph, Vertex start, Vertex end)
+{
+    auto [visited, prev] = forwardBreadthFirstTraversal(graph, start);
+
+    // we couldnt reach the end
+    if (visited.find(end) == visited.end())
+    {
+        return {};
+    }
+
+    std::vector<Vertex> path;
+    Vertex current = end;
+
+    while (current != start)
+    {
+        path.push_back(current);
+        current = prev[current];
+    }
+    path.push_back(start);
+
+    // we used std::vector for the path meaning we can apply this alg
+    std::reverse(path.begin(), path.end());
+
+    return path;
+}
+
+bool ADTDirectedGraph::readGraph(ADTDirectedGraph &graph, const std::string &filename)
+{
+    std::ifstream inputFile(filename);
+
+    // forgot to reset the damn graph
+    graph = ADTDirectedGraph{};
+
+    if (!inputFile.is_open())
+    {
+        return false;
+    }
+
+    unsigned int nbVertices, nbEdges;
+    inputFile >> nbVertices >> nbEdges;
+
+    Vertex first, second;
+    EdgeCost cost;
+
+    for (unsigned int i = 0; i < nbEdges; i++)
+    {
+        inputFile >> first >> second >> cost;
+
+        graph.addVertex(first);
+        graph.addVertex(second);
+
+        graph.addEdge({first, second}, cost);
+    }
+
+    return true;
+}
+
+bool ADTDirectedGraph::writeGraph(const ADTDirectedGraph &graph, const std::string &filename)
+{
+    std::ofstream outputFile(filename);
+
+    if (!outputFile.is_open())
+    {
+        return false;
+    }
+
+    outputFile << graph.nbVertices() << ' ' << graph.nbEdges() << std::endl;
+
+    EdgeCosts::const_iterator startIt = graph.parseEdgesBegin();
+    EdgeCosts::const_iterator endIt = graph.parseEdgesEnd();
+
+    while (startIt != endIt)
+    {
+
+        Edge currEdge = startIt->first;
+        EdgeCost currCost = startIt->second;
+
+        outputFile << currEdge.first << ' ' << currEdge.second << ' ' << currCost << std::endl;
+
+        ++startIt;
+    }
+
+    return true;
+}
+
+ADTDirectedGraph ADTDirectedGraph::generateRandomGraph(unsigned int nbVertices, unsigned int nbEdges)
+{
+
+    // so if we have nbEdges > nbVertices * (nbVertices - 1) we have a problemo
+    if (nbEdges > nbVertices * (nbVertices - 1))
+    {
+        throw std::exception();
+    }
+
+    ADTDirectedGraph graph = ADTDirectedGraph{};
+
+    // way of generating numbers from 0 to the limit of unsigned int
+    // rd is a seed gen, gen is a mersenne twister engine
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<unsigned int> randomUnsignedInt(0, UINT_MAX);
+    std::uniform_int_distribution<unsigned int> randomVerticesIndex(0, nbVertices - 1);
+
+    Vertices generatedVertices = Vertices{};
+
+    // we generate nbVertices number of vertices
+    for (unsigned int i = 0; i < nbVertices; ++i)
+    {
+        unsigned int vertex = Vertex{randomUnsignedInt(gen)};
+        graph.addVertex(vertex);
+        generatedVertices.push_back(vertex);
+    }
+
+    // we handle generating random edges
+    unsigned int generatedEdges = 0;
+    while (generatedEdges < nbEdges)
+    {
+
+        Vertex firstVertex = generatedVertices.at(randomVerticesIndex(gen));
+        Vertex secondVertex = generatedVertices.at(randomVerticesIndex(gen));
+
+        // if we got unlucky and we already have an edge we just skip
+        if (graph.isEdge(firstVertex, secondVertex))
+        {
+            continue;
+        }
+
+        // we create an edge with unsigned int cost as well
+        unsigned int randomCost = EdgeCost{randomUnsignedInt(gen)};
+        Edge createdEdge = Edge{firstVertex, secondVertex};
+        graph.addEdge(createdEdge, randomCost);
+
+        generatedEdges++;
+    }
+
+    return graph;
 }
