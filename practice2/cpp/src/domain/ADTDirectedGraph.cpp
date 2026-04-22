@@ -11,6 +11,7 @@
 #include <climits>
 #include <vector>
 #include <exception>
+#include <tuple>
 
 ADTDirectedGraph::ADTDirectedGraph()
 {
@@ -370,19 +371,59 @@ bool ADTDirectedGraph::readGraph(ADTDirectedGraph &graph, const std::string &fil
     Vertex first, second;
     EdgeCost cost;
 
+    // we want to handle the case where nbVertices > nb of unique vertices from the edges so this will take a while
+    std::vector<std::tuple<Vertex, Vertex, EdgeCost>> edges;
+    std::set<Vertex> uniqueVertices;
+
+    // we track unique vertices
     for (unsigned int i = 0; i < nbEdges; i++)
     {
         inputFile >> first >> second >> cost;
+        edges.push_back({first, second, cost});
 
-        graph.addVertex(first);
-        graph.addVertex(second);
+        uniqueVertices.insert(first);
+        uniqueVertices.insert(second);
+    }
 
-        graph.addEdge({first, second}, cost);
+    // we add all vertices
+    for (Vertex vertex : uniqueVertices)
+    {
+        graph.addVertex(vertex);
+    }
+
+    // we generate random unsigned ints as isolated vertices for the graph
+    unsigned int currentVertexCount = uniqueVertices.size();
+    if (currentVertexCount < nbVertices)
+    {
+        // same as the generate random graph func
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<unsigned int> randomUnsignedInt(0, UINT_MAX);
+
+        unsigned int verticesToAdd = nbVertices - currentVertexCount;
+
+        while (verticesToAdd > 0)
+        {
+            Vertex randomVertex = Vertex{randomUnsignedInt(gen)};
+
+            // we be careful to not add the same vertex twice
+            if (uniqueVertices.find(randomVertex) == uniqueVertices.end())
+            {
+                graph.addVertex(randomVertex);
+                uniqueVertices.insert(randomVertex);
+                verticesToAdd--;
+            }
+        }
+    }
+
+    // edges
+    for (const auto &edge : edges)
+    {
+        graph.addEdge({std::get<0>(edge), std::get<1>(edge)}, std::get<2>(edge));
     }
 
     return true;
 }
-
 bool ADTDirectedGraph::writeGraph(const ADTDirectedGraph &graph, const std::string &filename)
 {
     std::ofstream outputFile(filename);
