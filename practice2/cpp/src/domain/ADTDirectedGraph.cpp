@@ -312,6 +312,7 @@ std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> ADTDirectedGraph::forwardB
         {
             Vertex y = *neighOutBegin;
 
+            // if the vertex is not visited, thus not being in the visited set
             if (visited.find(y) == visited.end())
             {
                 queue.push(y);
@@ -329,9 +330,11 @@ std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> ADTDirectedGraph::forwardB
 
 std::vector<Vertex> ADTDirectedGraph::findLowestLengthPathBetweenTwoVertices(ADTDirectedGraph graph, Vertex start, Vertex end)
 {
-    auto [visited, prev] = forwardBreadthFirstTraversal(graph, start);
+    std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> fbftRes = forwardBreadthFirstTraversal(graph, start);
+    std::set<Vertex> visited = fbftRes.first;
+    std::map<Vertex, Vertex> prev = fbftRes.second;
 
-    // we couldnt reach the end
+    // we couldnt reach the end vertex
     if (visited.find(end) == visited.end())
     {
         return {};

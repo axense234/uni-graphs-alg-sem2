@@ -338,7 +338,7 @@ void MenuController::findConnectedComponentsOfGivenUndirectedGraph()
 
         std::vector<std::set<Vertex>> foundComponents = ADTUndirectedGraph::findConnectedComponentsOfUndirectedGraph(transformedGraph);
 
-        std::cout << "connected components";
+        std::cout << "connected components\n";
         std::cout << "hit: " << foundComponents.size() << "\n\n";
 
         for (size_t i = 0; i < foundComponents.size(); ++i)

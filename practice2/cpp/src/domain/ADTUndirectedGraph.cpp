@@ -232,6 +232,7 @@ std::vector<std::set<Vertex>> ADTUndirectedGraph::findConnectedComponentsOfUndir
     {
         Vertex v = it.getCurrent();
 
+        // its not visited then we do something (sets)
         if (visited.find(v) == visited.end())
         {
             // we get the component
