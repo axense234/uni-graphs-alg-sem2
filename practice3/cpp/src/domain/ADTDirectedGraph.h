@@ -171,7 +171,7 @@ public:
      * @param graph the directed graph
      * @param start the given start vertex
      * @param end the given end vertex
-     * @return std::pair<std::set<Vertex>, std::map<Vertex, Vertex>>
+     * @return std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> dist, prev
      */
     static std::pair<std::map<Vertex, EdgeCost>, std::map<Vertex, Vertex>> dijkstraAlgorithm(ADTDirectedGraph graph, Vertex start, Vertex end);
 
