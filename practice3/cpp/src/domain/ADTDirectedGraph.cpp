@@ -508,11 +508,11 @@ ADTDirectedGraph ADTDirectedGraph::generateRandomGraph(unsigned int nbVertices, 
     return graph;
 }
 
-std::pair<std::map<Vertex, unsigned int>, std::map<Vertex, Vertex>> ADTDirectedGraph::dijkstraAlgorithm(ADTDirectedGraph graph, Vertex start, Vertex end)
+std::pair<std::map<Vertex, EdgeCost>, std::map<Vertex, Vertex>> ADTDirectedGraph::dijkstraAlgorithm(ADTDirectedGraph graph, Vertex start, Vertex end)
 {
 
     std::map<Vertex, Vertex> prev;
-    std::map<Vertex, unsigned int> dist;
+    std::map<Vertex, EdgeCost> dist;
 
     // we need to compare the distances between 2 vertices in the priority queue
     auto vertexComparison = [&](Vertex a, Vertex b)
@@ -551,6 +551,108 @@ std::pair<std::map<Vertex, unsigned int>, std::map<Vertex, Vertex>> ADTDirectedG
         if (x == end)
         {
             found = true;
+        }
+    }
+
+    return {dist, prev};
+}
+
+std::pair<std::map<Vertex, int>, std::map<Vertex, Vertex>> ADTDirectedGraph::bellmanFordAlgorithm(ADTDirectedGraph graph, Vertex start, Vertex end)
+{
+
+    std::map<Vertex, int> dist;
+    std::map<Vertex, Vertex> prev;
+
+    ADTDirectedGraphIterator it = graph.parseVertices();
+    it.first();
+
+    // dist[x] = BIG_VALUE might have some unexpected behaviour if limit tested but for general use it should be fine
+    while (it.valid())
+    {
+        Vertex x = it.getCurrent();
+        dist[x] = BIG_VALUE;
+        prev[x] = x;
+
+        it.next();
+    }
+
+    dist[start] = 0;
+    bool changed = true;
+
+    int V = graph.nbVertices();
+    int pass = 0;
+
+    while (changed && pass < V - 1)
+    {
+        changed = false;
+
+        // we want to iterate over the edges and we also care about each respective cost so we can just use the costs map here
+        for (const auto &edgeWithCost : graph.costs)
+        {
+
+            // for convenience sake
+            Vertex y = edgeWithCost.first.second;
+            Vertex x = edgeWithCost.first.first;
+            EdgeCost cost = edgeWithCost.second;
+
+            if (dist[x] != BIG_VALUE && dist[y] > dist[x] + cost)
+            {
+                dist[y] = dist[x] + cost;
+                prev[y] = x;
+                changed = true;
+            }
+        }
+        pass++;
+    }
+
+    return {dist, prev};
+}
+
+std::pair<std::vector<std::vector<unsigned int>>, std::vector<std::vector<Vertex>>> ADTDirectedGraph::floydWarshallAlgorithm(ADTDirectedGraph graph)
+{
+
+    std::vector<std::vector<unsigned int>> dist(int(graph.nbVertices()), std::vector<Vertex>(graph.nbVertices(), BIG_VALUE));
+    std::vector<std::vector<Vertex>> prev(graph.nbVertices(), std::vector<Vertex>(graph.nbVertices(), -1));
+
+    for (int i = 0; i < graph.nbVertices(); i++)
+    {
+        for (int j = 0; j < graph.nbVertices(); j++)
+        {
+            dist[i][j] = BIG_VALUE;
+        }
+    }
+
+    for (int i = 0; i < graph.nbVertices(); i++)
+    {
+        dist[i][i] = 0;
+        prev[i][i] = i;
+    }
+
+    for (const auto &edgeWithCost : graph.costs)
+    {
+        Vertex y = edgeWithCost.first.second;
+        Vertex x = edgeWithCost.first.first;
+        EdgeCost cost = edgeWithCost.second;
+
+        dist[x][y] = cost;
+        prev[x][y] = x;
+    }
+
+    for (int k = 0; k < graph.nbVertices(); k++)
+    {
+        for (int i = 0; i < graph.nbVertices(); i++)
+        {
+            for (int j = 0; j < graph.nbVertices(); j++)
+            {
+                if (dist[i][k] != BIG_VALUE && dist[k][j] != BIG_VALUE)
+                {
+                    if (dist[i][j] > dist[i][k] + dist[k][j])
+                    {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                        prev[i][j] = prev[k][j];
+                    }
+                }
+            }
         }
     }
 

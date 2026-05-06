@@ -10,11 +10,13 @@ typedef unsigned int EdgeCost;
 typedef std::pair<Vertex, Vertex> Edge;
 
 class ADTDirectedGraphIterator;
+class MenuController;
 
 class ADTDirectedGraph
 {
 
     friend class ADTDirectedGraphIterator;
+    friend class MenuController;
 
 private:
     std::map<Vertex, std::vector<Vertex>> outbound;

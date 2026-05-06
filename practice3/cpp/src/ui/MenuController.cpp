@@ -270,7 +270,7 @@ void MenuController::writeGraphDataToGivenFile()
     }
 }
 
-void MenuController::findMinimumCostWalkBetweenTwoGivenVertices()
+void MenuController::findMinimumCostWalkBetweenTwoGivenVerticesUsingDijkstra()
 {
     Vertex start = this->ui.getUserVertex();
     Vertex end = this->ui.getUserVertex();
@@ -402,4 +402,113 @@ void MenuController::findConnectedComponentsOfGivenUndirectedGraph()
     {
         std::cout << "something went wrong" << std::endl;
     }
+}
+
+void MenuController::findMinimumCostWalkBetweenTwoGivenVerticesUsingFord()
+{
+    Vertex start = this->ui.getUserVertex();
+    Vertex end = this->ui.getUserVertex();
+
+    try
+    {
+        std::pair<std::map<Vertex, int>, std::map<Vertex, Vertex>> fordRes = this->graph.bellmanFordAlgorithm(this->graph, start, end);
+
+        std::map<Vertex, int> dist = fordRes.first;
+        std::map<Vertex, Vertex> prev = fordRes.second;
+
+        // we check if there is even a path between the 2 given vertices
+        if (dist[end] == BIG_VALUE || prev.find(end) == prev.end() || dist.find(end) == dist.end())
+        {
+            std::cout << "no path exists" << std::endl;
+            return;
+        }
+
+        // we can now check for negative cost cycles
+        for (const auto &edgeWithCost : this->graph.costs)
+        {
+            Vertex y = edgeWithCost.first.second;
+            Vertex x = edgeWithCost.first.first;
+            EdgeCost cost = edgeWithCost.second;
+
+            // if we can still make improvements then it means there is a negative cost somewhere
+            if (dist[x] != BIG_VALUE && dist[y] > dist[x] + cost)
+            {
+                std::cout << "negative cost cycle detected" << std::endl;
+                return;
+            }
+        }
+
+        std::vector<Vertex> path;
+        std::set<Vertex> visited;
+        Vertex current = end;
+
+        while (current != start)
+        {
+            if (visited.find(current) != visited.end())
+            {
+                break;
+            }
+            visited.insert(current);
+
+            path.push_back(current);
+            current = prev[current];
+        }
+
+        path.push_back(start);
+        std::reverse(path.begin(), path.end());
+
+        std::cout << "lowest cost walk from " << start << " to " << end << ":" << std::endl;
+        for (size_t i = 0; i < path.size(); i++)
+        {
+            std::cout << path[i];
+            if (i < path.size() - 1)
+                std::cout << " -> ";
+        }
+        std::cout << std::endl;
+        std::cout << "total cost: " << dist[end] << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << "negative cost cycles found using ford's" << std::endl;
+    }
+}
+
+void MenuController::findMinimumCostWalkBetweenTwoGivenVerticesUsingFloydWarshall()
+{
+    Vertex start = this->ui.getUserVertex();
+    Vertex end = this->ui.getUserVertex();
+
+    std::pair<std::vector<std::vector<unsigned int>>, std::vector<std::vector<Vertex>>> floydWarshallRes = this->graph.floydWarshallAlgorithm(this->graph);
+
+    std::vector<std::vector<unsigned int>> dist = floydWarshallRes.first;
+    std::vector<std::vector<Vertex>> prev = floydWarshallRes.second;
+
+    // we check if there is even a path between the 2 given vertices
+    if (dist[start][end] == BIG_VALUE)
+    {
+        std::cout << "no path exists" << std::endl;
+        return;
+    }
+
+    std::vector<Vertex> path;
+    Vertex current = end;
+
+    while (current != start)
+    {
+        path.push_back(current);
+        current = prev[start][current];
+    }
+    path.push_back(start);
+
+    std::reverse(path.begin(), path.end());
+
+    std::cout << "lowest cost walk from " << start << " to " << end << ":" << std::endl;
+    for (size_t i = 0; i < path.size(); i++)
+    {
+        std::cout << path[i];
+        if (i < path.size() - 1)
+            std::cout << " -> ";
+    }
+    std::cout << std::endl;
+    std::cout << "total cost: " << dist[start][end] << std::endl;
 }

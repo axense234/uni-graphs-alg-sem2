@@ -69,10 +69,18 @@ std::vector<std::pair<std::string, Command>> MenuUI::constructAvailableCommands(
 
         {"ccug", {UTILITY, "finds the connected components of an undirected graph (transformed from directed to undirected)\n", [controller]() mutable
                   { controller.findConnectedComponentsOfGivenUndirectedGraph(); }}},
-        {"dijkstra", {UTILITY, "finds the minimum cost walk between 2 given vertices", [controller]() mutable
+        {"dijkstra", {UTILITY, "finds the minimum cost walk between 2 given vertices using dijkstra\n", [controller]() mutable
                       {
-                          controller.findMinimumCostWalkBetweenTwoGivenVertices();
-                      }}}};
+                          controller.findMinimumCostWalkBetweenTwoGivenVerticesUsingDijkstra();
+                      }}},
+        {"ford", {UTILITY, "finds the minimum cost walk between 2 given vertices using ford\n", [controller]() mutable
+                  {
+                      controller.findMinimumCostWalkBetweenTwoGivenVerticesUsingFord();
+                  }}},
+        {"floyd", {UTILITY, "finds the minimum cost walk between 2 given vertices using floyd\n", [controller]() mutable
+                   {
+                       controller.findMinimumCostWalkBetweenTwoGivenVerticesUsingFloydWarshall();
+                   }}}};
 };
 
 MenuUI::MenuUI(ADTDirectedGraph &g) : graph(g)

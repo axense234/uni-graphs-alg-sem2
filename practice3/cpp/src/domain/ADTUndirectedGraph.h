@@ -6,7 +6,7 @@
 #include <string>
 
 typedef unsigned int Vertex;
-typedef unsigned int EdgeCost;
+typedef int EdgeCost;
 typedef std::pair<Vertex, Vertex> Edge;
 
 class ADTUndirectedGraphIterator;

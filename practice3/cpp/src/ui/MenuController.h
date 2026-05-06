@@ -45,7 +45,9 @@ public:
     void findLowestLengthPathBetweenTwoGivenVertices() const;
     void findConnectedComponentsOfGivenUndirectedGraph();
 
-    void findMinimumCostWalkBetweenTwoGivenVertices();
+    void findMinimumCostWalkBetweenTwoGivenVerticesUsingDijkstra();
+    void findMinimumCostWalkBetweenTwoGivenVerticesUsingFord();
+    void findMinimumCostWalkBetweenTwoGivenVerticesUsingFloydWarshall();
 
     /**
      * @brief Converts a ADTDirectedGraph instance into a ADTUndirectedGraph instance and returns it.

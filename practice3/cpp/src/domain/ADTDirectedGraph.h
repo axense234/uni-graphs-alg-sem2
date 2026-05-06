@@ -5,23 +5,27 @@
 #include <set>
 #include <string>
 
+#define BIG_VALUE 1000000000
+
 typedef unsigned int Vertex;
-typedef unsigned int EdgeCost;
+typedef int EdgeCost;
 typedef std::pair<Vertex, Vertex> Edge;
 
 class ADTDirectedGraphIterator;
+class MenuController;
 
 class ADTDirectedGraph
 {
 
     friend class ADTDirectedGraphIterator;
+    friend class MenuController;
 
 private:
     std::map<Vertex, std::vector<Vertex>> outbound;
     std::map<Vertex, std::vector<Vertex>> inbound;
-    std::map<Edge, EdgeCost> costs;
 
 public:
+    std::map<Edge, EdgeCost> costs;
     /**
      * @brief Construct a new ADTDirectedGraph object.
      */
@@ -169,16 +173,34 @@ public:
      * @param end the given end vertex
      * @return std::pair<std::set<Vertex>, std::map<Vertex, Vertex>>
      */
-    static std::pair<std::map<Vertex, unsigned int>, std::map<Vertex, Vertex>> dijkstraAlgorithm(ADTDirectedGraph graph, Vertex start, Vertex end);
+    static std::pair<std::map<Vertex, EdgeCost>, std::map<Vertex, Vertex>> dijkstraAlgorithm(ADTDirectedGraph graph, Vertex start, Vertex end);
+
+    /**
+     * @brief Given a graph with positive costs and two vertices start and end, finds a minimum cost walk from start to end.
+     *
+     * @param graph the directed graph
+     * @param start the given start vertex
+     * @param end the given end vertex
+     * @return std::pair<std::map<Vertex, int>, std::map<Vertex, Vertex>> dist and prev where dist is a map of minimum costs and prev is the map of predecessors
+     */
+    static std::pair<std::map<Vertex, EdgeCost>, std::map<Vertex, Vertex>> bellmanFordAlgorithm(ADTDirectedGraph graph, Vertex start, Vertex end);
 
     /**
      * @brief The algorith below visits all the vertices that are accessible from the start vertex. They are visited in the order of increasing distances from the starting vertex. A previous vector or map is computed, allowing us to compute the minimum length path from the starting vertex to any choosen accessible vertex.
      *
      * @param graph The graph in question.
      * @param start The starting vertex.
-     * @return std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> -> accessible vertices from s and the prev map
+     * @return std::pair<std::set<Vertex>, std::map<Vertex, Vertex>>
      */
     static std::pair<std::set<Vertex>, std::map<Vertex, Vertex>> forwardBreadthFirstTraversal(ADTDirectedGraph graph, Vertex start);
+
+    /**
+     * @brief Computes the minimum cost matrix and a prev matrix, returning them.
+     *
+     * @param graph the graph in question
+     * @return std::pair<std::vector<std::vector<unsigned int>>, std::vector<std::vector<Vertex>>>, first is dist, second is prev
+     */
+    static std::pair<std::vector<std::vector<unsigned int>>, std::vector<std::vector<Vertex>>> floydWarshallAlgorithm(ADTDirectedGraph graph);
 
     /**
      * @brief Given a directed graph and two vertices, finds a lowest length path between them, by using a forward breadth-first search from the starting vertex.
