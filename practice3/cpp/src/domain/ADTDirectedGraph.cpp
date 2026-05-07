@@ -614,15 +614,15 @@ std::pair<std::vector<std::vector<unsigned int>>, std::vector<std::vector<Vertex
     std::vector<std::vector<unsigned int>> dist(int(graph.nbVertices()), std::vector<Vertex>(graph.nbVertices(), BIG_VALUE));
     std::vector<std::vector<Vertex>> prev(graph.nbVertices(), std::vector<Vertex>(graph.nbVertices(), -1));
 
-    for (int i = 0; i < graph.nbVertices(); i++)
+    for (unsigned int i = 0; i < graph.nbVertices(); i++)
     {
-        for (int j = 0; j < graph.nbVertices(); j++)
+        for (unsigned int j = 0; j < graph.nbVertices(); j++)
         {
             dist[i][j] = BIG_VALUE;
         }
     }
 
-    for (int i = 0; i < graph.nbVertices(); i++)
+    for (unsigned int i = 0; i < graph.nbVertices(); i++)
     {
         dist[i][i] = 0;
         prev[i][i] = i;
@@ -638,11 +638,11 @@ std::pair<std::vector<std::vector<unsigned int>>, std::vector<std::vector<Vertex
         prev[x][y] = x;
     }
 
-    for (int k = 0; k < graph.nbVertices(); k++)
+    for (unsigned int k = 0; k < graph.nbVertices(); k++)
     {
-        for (int i = 0; i < graph.nbVertices(); i++)
+        for (unsigned int i = 0; i < graph.nbVertices(); i++)
         {
-            for (int j = 0; j < graph.nbVertices(); j++)
+            for (unsigned int j = 0; j < graph.nbVertices(); j++)
             {
                 if (dist[i][k] != BIG_VALUE && dist[k][j] != BIG_VALUE)
                 {
