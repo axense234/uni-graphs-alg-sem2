@@ -80,7 +80,11 @@ std::vector<std::pair<std::string, Command>> MenuUI::constructAvailableCommands(
         {"floyd", {UTILITY, "finds the minimum cost walk between 2 given vertices using floyd\n", [controller]() mutable
                    {
                        controller.findMinimumCostWalkBetweenTwoGivenVerticesUsingFloydWarshall();
-                   }}}};
+                   }}},
+        {"dag-highest-cost", {UTILITY, "verifies if the graph is a dag and if it is it finds the highest cost path between 2 given vertices\n", [controller]() mutable
+                              {
+                                  controller.findHighestCostPathBetweenTwoGivenVerticesUsingPredecessors();
+                              }}}};
 };
 
 MenuUI::MenuUI(ADTDirectedGraph &g) : graph(g)
@@ -94,7 +98,7 @@ void MenuUI::help()
     std::vector<std::pair<std::string, Command>> availableCommands = this->constructAvailableCommands(menuController);
 
     std::cout
-        << "\n -> graphs algorithms practice 2 <- \n";
+        << "\n -> graphs algorithms practice 4 <- \n";
     COMMAND_CATEGORY currentCategory = NONE;
 
     for (const auto &command : availableCommands)

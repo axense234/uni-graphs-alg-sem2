@@ -515,8 +515,12 @@ void MenuController::findMinimumCostWalkBetweenTwoGivenVerticesUsingFloydWarshal
 
 void MenuController::findHighestCostPathBetweenTwoGivenVerticesUsingPredecessors()
 {
-    Vertex start = this->ui.getUserVertex();
-    Vertex end = this->ui.getUserVertex();
+
+    if (this->graph.nbVertices() == 0)
+    {
+        std::cout << "graph is empty" << std::endl;
+        return;
+    }
 
     std::pair<bool, std::vector<unsigned int>> topoResult = ADTDirectedGraph::topologicalSort(this->graph);
 
@@ -525,6 +529,9 @@ void MenuController::findHighestCostPathBetweenTwoGivenVerticesUsingPredecessors
         std::cout << "graph is not a dag" << std::endl;
         return;
     }
+
+    Vertex start = this->ui.getUserVertex();
+    Vertex end = this->ui.getUserVertex();
 
     std::vector<Vertex> topoOrder = topoResult.second;
 
@@ -606,5 +613,14 @@ void MenuController::findHighestCostPathBetweenTwoGivenVerticesUsingPredecessors
     // reverse
     std::reverse(path.begin(), path.end());
 
-    return;
+    // this should be a function on its own but ehh
+    std::cout << "lowest cost walk from " << start << " to " << end << ":" << std::endl;
+    for (size_t i = 0; i < path.size(); i++)
+    {
+        std::cout << path[i];
+        if (i < path.size() - 1)
+            std::cout << " -> ";
+    }
+    std::cout << std::endl;
+    std::cout << "total cost: " << dist[end] << std::endl;
 }
