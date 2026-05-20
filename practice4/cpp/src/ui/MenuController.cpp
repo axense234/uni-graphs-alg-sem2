@@ -533,13 +533,24 @@ void MenuController::findHighestCostPathBetweenTwoGivenVerticesUsingPredecessors
     Vertex start = this->ui.getUserVertex();
     Vertex end = this->ui.getUserVertex();
 
-    std::vector<Vertex> topoOrder = topoResult.second;
-
     if (this->graph.outbound.count(start) == 0 || this->graph.outbound.count(end) == 0)
     {
         std::cout << "both vertices need to exist in the graph" << std::endl;
         return;
     }
+
+    std::vector<Vertex> topoOrder = topoResult.second;
+
+    std::cout << "topologicall order: ";
+    for (size_t i = 0; i < topoOrder.size(); i++)
+    {
+        std::cout << topoOrder[i];
+        if (i < topoOrder.size() - 1)
+        {
+            std::cout << " -> ";
+        }
+    }
+    std::cout << std::endl;
 
     std::map<Vertex, int> dist;
     std::map<Vertex, Vertex> prev;
